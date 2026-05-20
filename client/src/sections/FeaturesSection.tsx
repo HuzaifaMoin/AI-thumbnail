@@ -46,7 +46,7 @@ export default function FeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ type: "spring", stiffness: 240, damping: 70, mass: 1 }}
                     >
-                        <img className="h-full w-auto" src="/assets/features-showcase-1.png" alt="features showcase" width={1000} height={500} />
+                        <img className="h-full w-auto" src="../src/assets/features-showcase-1.png" alt="features showcase" width={1000} height={500} />
                     </motion.div>
                     <motion.div className="md:col-span-1"
                         initial={{ y: 150, opacity: 0 }}
@@ -54,10 +54,10 @@ export default function FeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.15, type: "spring", stiffness: 320, damping: 70, mass: 1 }}
                     >
-                        <img src="/assets/features-showcase-2.png" alt="features showcase" width={1000} height={500} className="hover:-translate-y-0.5 transition duration-300" />
+                        <img src="../src/assets/features-showcase-2.png" alt="features showcase" width={1000} height={500} className="hover:-translate-y-0.5 transition duration-300" />
                         <h3 className="text-[24px]/7.5 text-slate-300 font-medium mt-6">
                             Boost Your Productivity </h3>
-                        <a href="#" className="flex items-center gap-2 mt-2 text-slate-300 hover:text-pink-600 transition">
+                        <a href="/generate" className="flex items-center gap-2 mt-2 text-slate-300 hover:text-pink-600 transition">
                             <ArrowUpRight className="size-5" />
                             <span>Start generating for free.</span>
                         </a>
