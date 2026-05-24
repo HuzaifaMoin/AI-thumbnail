@@ -5,7 +5,8 @@ import connectDB from "./configs/db.js";
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import Authrouter from  './routes/AuthRoutes.js';
-
+import ThumbnailRouter from "./routes/ThumbnailRoutes.js";
+import UserRouter from './routes/UserRoutes.js';
 declare module "express-session" {
     interface SessionData {
         isLoggedIn: boolean;
@@ -49,7 +50,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/auth', Authrouter )
-
+app.use('/api/thumbnails', ThumbnailRouter)
+app.use('/api/user', UserRouter)
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
