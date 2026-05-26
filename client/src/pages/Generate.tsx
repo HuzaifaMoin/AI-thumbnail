@@ -1,15 +1,23 @@
 import React from "react";
-import { useParams } from "react-router";
-import { useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import api from "../configs/api";
 import  SoftBackDrop  from "../components/SoftBackDrop";
 import AspectRatioSelector from "../components/AspectRatioSelector";
 import StyleSelector from "../components/StyleSelector";
-import  { type AspectRatio, type IThumbnail, type ThumbnailStyle, colorSchemes, dummyThumbnails } from "../assets/assets";
+import  { type AspectRatio, type IThumbnail, type ThumbnailStyle, colorSchemes, } from "../assets/assets";
 import ColorSchemeSelector from "../components/ColorSchemeSelector";
 import PreviewPanel from "../components/PreviewPanel";
-import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+
+
+
 const Generate = () => {
   const { id } = useParams();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [title, setTitle] = React.useState("");
   const [additionalDetails, setAdditionalDetails] = useState("");
   const [thumbnail, setThumbnail] = useState<IThumbnail | null>(null);
@@ -18,30 +26,77 @@ const Generate = () => {
   const [colorSchemeId, setColorSchemeId] = useState<string>(colorSchemes[0].id);
   const [style, setStyle] = useState<ThumbnailStyle>('Bold & Graphic');
   const [styleDropdownOpen, setStyleDropdownOpen] = useState(false);
-  const handleGenerate = async () => {};
 
-
-  const fetchThumbnail = async ()=> {
-   if (id) {
-    const thumbnail : any = dummyThumbnails.find((thumbnail) => thumbnail._id === id);
-    if (thumbnail) {   
-      setThumbnail(thumbnail);
-      setAdditionalDetails(thumbnail.user_prompt)
-      setTitle(thumbnail.title);
-      setColorSchemeId(thumbnail.color_scheme_id)
-      setAspectRatio(thumbnail.aspect_ratio)
-      setStyle(thumbnail.style)
-      setLoading(false)
+  const handleGenerate = async () => {
+    if (!isLoggedIn) {
+      toast.error("Please Log in to generate thumbnail. ");
+      navigate('/login');
+      return;
     }
-   }
+
+    if (!title.trim()) {
+      
+      return toast.error(
+        "Please enter a title or topic before generating."
+      )
+    };
+      try {
+      setLoading(true);
+      // setThumbnail(null);
+
+      const { data } = await api.post('/api/thumbnails/generate', {
+  title: title,
+  prompt: additionalDetails,
+  style: style,
+  aspect_ratio: aspectRatio,
+  color_scheme: colorSchemeId,
+  text_overlay: false,
+})
+      
+      if (data.thumbnail) {
+        navigate('/generate/' + data.thumbnail._id);
+        toast.success(data.message)
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.message || 'Thumbnail generation failed.');
+      }
+
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || 'Failed to fetch thumbnail.');
+      // console.log("Thumbnail generation error details")
+    }
+  };
+
+  const fetchThumbnail = async () => {
+    try {
+      const { data } = await api.get(`/api/thumbnails/${id}`);
+      setThumbnail(data?.thumbnail as IThumbnail)
+      setLoading(!data?.thumbnail?.image_url)
+      setAdditionalDetails(data?.thumbnail?.user_prompt)
+      setTitle(data?.thumbnail?.title)
+      setColorSchemeId(data?.thumbnail?.color_scheme)
+      setAspectRatio(data?.thumbnail?.aspect_ratio)
+      setStyle(data?.thumbnail.style)
+
+    } catch (error: any) {
+      // toast.error(error?.response?.data?.message || error?.message || 'Failed to fetch thumbnail.');
+    }
 }
 useEffect(() => {
-     if (id) {
-        fetchThumbnail();
+  if (!id || !isLoggedIn) return;
 
-     }
-}, [id])
+  const interval = setInterval(() => {
+    fetchThumbnail();
+  }, 5000);
 
+  return () => clearInterval(interval);
+}, [id, isLoggedIn]);
+useEffect(() => {
+  if(!id  && thumbnail){
+    setThumbnail(null);
+  }
+}, [pathname])
   return (
     <>
       <SoftBackDrop />
@@ -107,5 +162,4 @@ useEffect(() => {
     </>
   );
 };
-
 export default Generate;

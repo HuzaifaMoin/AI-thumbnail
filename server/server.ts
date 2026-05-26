@@ -11,6 +11,11 @@ declare module "express-session" {
     interface SessionData {
         isLoggedIn: boolean;
         userId: string;
+        user: {
+            id: string;
+            name: string;
+            email: string;
+        };
     }
 
 }

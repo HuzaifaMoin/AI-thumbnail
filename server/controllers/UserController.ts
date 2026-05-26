@@ -4,9 +4,8 @@ import { deleteThumbnail, generateThumbnail, } from '../controllers/ThumbnailCon
 
 export const getUserThumbnails = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.session;
+        const userId = req.session.user?.id;
 
-        // If no user is found in the session, reject the request
         if (!userId) {
             return res.status(401).json({
                 success: false,
@@ -36,7 +35,7 @@ export const getUserThumbnails = async (req: Request, res: Response) => {
 export const getSingleThumbnail = async (req: Request, res: Response) => {
     try {
         const { id } = req.params; // Get thumbnail ID from URL params
-        const { userId } = req.session; // Get logged-in user ID from session
+        const userId = req.session.user?.id;
 
         if (!userId) {
             return res.status(401).json({
@@ -46,9 +45,9 @@ export const getSingleThumbnail = async (req: Request, res: Response) => {
         }
 
         // Find the thumbnail by its ID
-        const thumbnail = await Thumbnail.findById(id);
+        const thumbnails = await Thumbnail.findById(id);
 
-        if (!thumbnail) {
+        if (!thumbnails) {
             return res.status(404).json({
                 success: false,
                 message: "Thumbnail not found."
@@ -56,7 +55,7 @@ export const getSingleThumbnail = async (req: Request, res: Response) => {
         }
 
         // Security check: verification that this thumbnail belongs to the logged-in user [1]
-        if (thumbnail.userId?.toString() !== userId.toString()) {
+        if (thumbnails.userId?.toString() !== userId.toString()) {
             return res.status(403).json({
                 success: false,
                 message: "Forbidden. You do not have permission to view this thumbnail."
@@ -66,7 +65,7 @@ export const getSingleThumbnail = async (req: Request, res: Response) => {
         // Return the individual thumbnail data
         res.status(200).json({
             success: true,
-            data: thumbnail
+            data: thumbnails
         });
 
     } catch (error: any) {
