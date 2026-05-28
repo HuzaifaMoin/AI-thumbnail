@@ -24,27 +24,32 @@ await connectDB();
 const app = express();
 
 // Middleware
+app.set("trust proxy", 1);
+
 app.use(cors({
-    origin: ['https://ai-thumbnail-lvgd.vercel.app/'],
+    origin: [
+        "https://ai-thumbnail-lvgd.vercel.app"
+    ],
     credentials: true,
 }));
+
+app.options("*", cors());
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'default_secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false,
-        maxAge: 1000 * 60 * 60 * 24 * 7,},
+        secure: true,
+        sameSite: "none",
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
     store: MongoStore.create({
-            mongoUrl: process.env.MONGODB_URI,
-            ttl: 14 * 24 * 60 * 60,
-            collectionName: 'sessions',
-        
-        })
-
-        },
-));
+        mongoUrl: process.env.MONGODB_URI,
+        ttl: 14 * 24 * 60 * 60,
+        collectionName: 'sessions',
+    })
+}));
 
 app.use(express.json());
 
