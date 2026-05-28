@@ -4,6 +4,8 @@ import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { featuresData } from "../data/features";
 import type { IFeature } from "../types";
+import featuresShowcase1 from "../assets/features-showcase-1.png";
+import featuresShowcase2 from "../assets/features-showcase-2.png";
 
 export default function FeaturesSection() {
     return (
@@ -46,7 +48,7 @@ export default function FeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ type: "spring", stiffness: 240, damping: 70, mass: 1 }}
                     >
-                        <img className="h-full w-auto" src="../src/assets/features-showcase-1.png" alt="features showcase" width={1000} height={500} />
+                        <img className="h-full w-auto" src={featuresShowcase1} alt="features showcase" width={1000} height={500} />
                     </motion.div>
                     <motion.div className="md:col-span-1"
                         initial={{ y: 150, opacity: 0 }}
@@ -54,7 +56,7 @@ export default function FeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.15, type: "spring", stiffness: 320, damping: 70, mass: 1 }}
                     >
-                        <img src="../src/assets/features-showcase-2.png" alt="features showcase" width={1000} height={500} className="hover:-translate-y-0.5 transition duration-300" />
+                        <img src={featuresShowcase2} alt="features showcase" width={1000} height={500} className="hover:-translate-y-0.5 transition duration-300" />
                         <h3 className="text-[24px]/7.5 text-slate-300 font-medium mt-6">
                             Boost Your Productivity </h3>
                         <a href="/generate" className="flex items-center gap-2 mt-2 text-slate-300 hover:text-pink-600 transition">

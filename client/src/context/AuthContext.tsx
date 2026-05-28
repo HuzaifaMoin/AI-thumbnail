@@ -39,9 +39,13 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
             if(data.success){
                 setUser(data.user as IUser)
                 setIsLoggedIn(true)
+                toast.success(data.message)
+            } else {
+                toast.error(data.message || 'Registration failed');
             }
-            toast.success(data.message)
-        } catch (error) {
+        } catch (error: any) {
+            const message = error?.response?.data?.message || error?.message || 'Registration failed';
+            toast.error(message);
             console.log(error);
         }
     }
@@ -51,12 +55,16 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
         try {
             const {data} = await api.post('/api/auth/login', {email,
             password});
-            if(data.user){
+            if(data.success){
                 setUser(data.user as IUser)
                 setIsLoggedIn(true)
+                toast.success(data.message)
+            } else {
+                toast.error(data.message || 'Login failed');
             }
-            toast.success(data.message)
-        } catch (error) {
+        } catch (error: any) {
+            const message = error?.response?.data?.message || error?.message || 'Login failed';
+            toast.error(message);
             console.log(error);
         }
     }

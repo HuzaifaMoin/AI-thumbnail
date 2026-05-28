@@ -23,7 +23,7 @@ export const registerUser = async (req: Request, res: Response) => {
     // find user by email
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
     // encrypt the password
@@ -46,12 +46,14 @@ export const registerUser = async (req: Request, res: Response) => {
     };
 
     return res.status(201).json({
+      success: true,
       message: 'User registered and logged in successfully',
       user: req.session.user
     });
 
   } catch (error) {
     return res.status(500).json({ 
+      success: false,
       message: 'Server error', 
       error: error instanceof Error ? error.message : error 
     });
@@ -68,13 +70,13 @@ export const loginUser = async (req: Request, res: Response) => {
     // find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
     // Verify password match
     const isMatch = await bcrypt.compare(password, user.password as string);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
     // setting user data in session
@@ -85,12 +87,14 @@ export const loginUser = async (req: Request, res: Response) => {
     };
 
     return res.status(200).json({
+      success: true,
       message: 'Login successful',
       user: req.session.user
     });
 
   } catch (error) {
     return res.status(500).json({ 
+      success: false,
       message: 'Server error', 
       error: error instanceof Error ? error.message : error 
     });
