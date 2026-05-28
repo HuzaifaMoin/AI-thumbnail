@@ -28,7 +28,7 @@ app.set("trust proxy", 1);
 
 const corsOptions = {
     origin: [
-        "https://ai-thumbnail-lvgd.vercel.app",
+        "https://ai-thumbnail-4xwn.vercel.app",
         "http://localhost:3000"
     ],
     credentials: true,
