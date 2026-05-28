@@ -26,14 +26,18 @@ const app = express();
 // Middleware
 app.set("trust proxy", 1);
 
-app.use(cors({
+const corsOptions = {
     origin: [
-        "https://ai-thumbnail-lvgd.vercel.app"
+        "https://ai-thumbnail-lvgd.vercel.app",
+        "http://localhost:3000"
     ],
     credentials: true,
-}));
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
 
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'default_secret',
