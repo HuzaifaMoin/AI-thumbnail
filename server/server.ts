@@ -37,10 +37,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors({
-    origin: "https://ai-thumbnail-lvgd.vercel.app",
-    credentials: true
-}));
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'default_secret',
