@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
-import heroImage from '../assets/hero_img.png';
+// Served from /public
+const heroImage = "/hero_img.png";
 
 const springValues = {
     damping: 30,

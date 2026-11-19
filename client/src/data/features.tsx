@@ -1,7 +1,10 @@
 import type { IFeature } from "../types";
-import zapIcon from "../assets/zap-icon.svg";
-import thumbIcon from "../assets/thumb-icon.svg";
-import shapeIcon from "../assets/shape-icon.svg";
+// Served from /public
+const zapIcon = "/zap-icon.svg";
+// Served from /public
+const thumbIcon = "/thumb-icon.svg";
+// Served from /public
+const shapeIcon = "/shape-icon.svg";
 
 export const featuresData: IFeature[] = [
     {

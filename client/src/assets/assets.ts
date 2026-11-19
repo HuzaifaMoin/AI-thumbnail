@@ -1,10 +1,10 @@
-import thumb_1 from "./thumb_1.jpg";
-import thumb_2 from "./thumb_2.jpg";
-import thumb_3 from "./thumb_3.jpg";
-import thumb_4 from "./thumb_4.jpg";
-import thumb_5 from "./thumb_5.jpg";
-import thumb_6 from "./thumb_6.jpg";
-import thumb_7 from "./thumb_7.jpg";
+const thumb_1 = "/thumb_1.jpg"; // served from /public
+const thumb_2 = "/thumb_2.jpg"; // served from /public
+const thumb_3 = "/thumb_3.jpg"; // served from /public
+const thumb_4 = "/thumb_4.jpg"; // served from /public
+const thumb_5 = "/thumb_5.jpg"; // served from /public
+const thumb_6 = "/thumb_6.jpg"; // served from /public
+const thumb_7 = "/thumb_7.jpg"; // served from /public
 
 
 export const aspectRatios = ["16:9", "1:1", "9:16"];

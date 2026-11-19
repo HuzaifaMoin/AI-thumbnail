@@ -25,7 +25,8 @@ const MyGeneration = () => {
     try {
       setLoading(true)
       const { data } = await api.get('/api/user/thumbnails')
-      setThumbnails(data.thumbnails || [])
+      // The server returns the list in `data`.
+      setThumbnails(data.data || data.thumbnails || [])
     } catch (error: any) {
       console.error("error fetching thumbnails", error)
       toast.error(error?.response?.data?.message || error.message)
@@ -48,8 +49,7 @@ const MyGeneration = () => {
     const confirm = window.confirm('Are you sure you want to delete this thumbnail?');
     if (!confirm) return;
 
-    // Fixed string interpolation template literal backticks if they were plain quotes
-    const { data } = await api.delete(`/api/thumbnail/delete/${id}`);
+    const { data } = await api.delete(`/api/thumbnails/delete/${id}`);
     toast.success(data.message);
     setThumbnails(thumbnails.filter((t) => t._id !== id));
   } catch (error: any) {
@@ -144,7 +144,7 @@ const MyGeneration = () => {
                     <DownloadIcon
                       onClick={() => handleDownload(thumb.image_url!)}
                       className='size-6 bg-black/50 p-1 rounded hover:bg-pink-600 transition-all' />
-                    <Link target="_blank" to={`/preview?thumbnail_url=${thumb.image_url}&title=${thumb.title}`}>
+                    <Link target="_blank" to={`/preview?thumbnail_url=${encodeURIComponent(thumb.image_url || '')}&title=${encodeURIComponent(thumb.title)}`}>
                       <ArrowUpRightIcon className='size-6 bg-black/50 p-1 rounded hover:bg-pink-600 transition-all' />
                     </Link>
                   </div>

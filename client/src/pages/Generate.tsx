@@ -53,44 +53,55 @@ const Generate = () => {
   text_overlay: false,
 })
       
-      if (data.thumbnail) {
-        navigate('/generate/' + data.thumbnail._id);
-        toast.success(data.message)
-      }
-
-      if (!data?.success) {
+      if (!data?.success || !data.thumbnail) {
         throw new Error(data?.message || 'Thumbnail generation failed.');
       }
 
+      setThumbnail(data.thumbnail as IThumbnail);
+      setLoading(false);
+      navigate('/generate/' + data.thumbnail._id);
+      toast.success(data.message);
+
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || 'Failed to fetch thumbnail.');
-      // console.log("Thumbnail generation error details")
+      // Stop the spinner so the user can try again.
+      setLoading(false);
+      toast.error(error?.response?.data?.message || error?.message || 'Thumbnail generation failed.');
     }
   };
 
-  const fetchThumbnail = async () => {
+  // Returns true once the thumbnail has an image (or can't be loaded), so polling can stop.
+  const fetchThumbnail = async (): Promise<boolean> => {
     try {
       const { data } = await api.get(`/api/thumbnails/${id}`);
-      setThumbnail(data?.thumbnail as IThumbnail)
-      setLoading(!data?.thumbnail?.image_url)
-      setAdditionalDetails(data?.thumbnail?.user_prompt)
-      setTitle(data?.thumbnail?.title)
-      setColorSchemeId(data?.thumbnail?.color_scheme)
-      setAspectRatio(data?.thumbnail?.aspect_ratio)
-      setStyle(data?.thumbnail.style)
-
+      const t = data?.thumbnail as IThumbnail | undefined;
+      if (!t) return true;
+      setThumbnail(t)
+      setLoading(!t.image_url && Boolean(t.isGenerating))
+      setAdditionalDetails(t.user_prompt || "")
+      setTitle(t.title)
+      if (t.color_scheme) setColorSchemeId(t.color_scheme)
+      if (t.aspect_ratio) setAspectRatio(t.aspect_ratio)
+      if (t.style) setStyle(t.style)
+      return Boolean(t.image_url) || !t.isGenerating;
     } catch (error: any) {
-      // toast.error(error?.response?.data?.message || error?.message || 'Failed to fetch thumbnail.');
+      setLoading(false);
+      toast.error(error?.response?.data?.message || 'Could not load this thumbnail.');
+      return true;
     }
 }
 useEffect(() => {
   if (!id || !isLoggedIn) return;
 
-  const interval = setInterval(() => {
-    fetchThumbnail();
-  }, 5000);
+  // Load right away, then keep checking only while it's still generating.
+  let stopped = false;
+  let timer: ReturnType<typeof setTimeout>;
+  const poll = async () => {
+    const done = await fetchThumbnail();
+    if (!done && !stopped) timer = setTimeout(poll, 5000);
+  };
+  poll();
 
-  return () => clearInterval(interval);
+  return () => { stopped = true; clearTimeout(timer); };
 }, [id, isLoggedIn]);
 useEffect(() => {
   if(!id  && thumbnail){
@@ -101,17 +112,17 @@ useEffect(() => {
     <>
       <SoftBackDrop />
       <div className="pt-24 min-h-screen ">
-        <main className="max-w-6x1 mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 lg:pb-8">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-28 lg:pb-8">
           <div className="grid lg:grid-cols-[400px_1fr] gap-8">
             {/* LEFT PANEL */}
             <div className={`space-y-6 ${id && "pointer-events-none"}`}>
-              <div className="p-6 rounded-2x1 bg-white/8 border border-white/12 shadow-x1 space-y-6 rounded-xl">
+              <div className="p-6 rounded-2xl bg-white/8 border border-white/12 shadow-xl space-y-6 rounded-xl">
                 <div className="space-y-2 border-r-4 border-pink-500 pr-4">
                   <h2 className="text-xl font-bold text-zinc-100">
                     Create Your Thumbnail
                   </h2>
                   <p className="text-sm text-zinc-400">
-                    Provide the necessary details for your thumnail.
+                    Provide the necessary details for your thumbnail.
                   </p>
                 </div>
                 <div className="space-y-6">
@@ -123,7 +134,7 @@ useEffect(() => {
                       onChange={(e) => setTitle(e.target.value)}
                       maxLength={100}
                       placeholder="Write your topic"
-                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/12 shadow-x1 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-white/8 border border-white/12 shadow-xl focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors"
                     />
                     <div>
                       <span className="text-xs text-zinc-400">
@@ -142,8 +153,8 @@ useEffect(() => {
                     </div>
                 </div>
                 {!id && (
-                  <button onClick={handleGenerate}
-                    className="text-[15px] w-full py-3.5 rounded-xl font-medium bg-linear-to-b from-pink-500 to-pink-600 hover:from-pink-700 disabled:cursor-not-allowed transition-colors">
+                  <button onClick={handleGenerate} disabled={loading}
+                    className="text-[15px] w-full py-3.5 rounded-xl font-medium bg-linear-to-b from-pink-500 to-pink-600 hover:from-pink-700 disabled:cursor-not-allowed disabled:opacity-60 transition-colors">
                     {loading ? "Generating..." : "Generate Thumbnail"}
                   </button>
                 )}
@@ -151,7 +162,7 @@ useEffect(() => {
             </div>
             {/* RIGHT PANEL */}
             <div>
-              <div className="p-6 rounded 2x1 bg-white/8 border-white/10 shadow-x1">
+              <div className="p-6 rounded-2xl bg-white/8 border border-white/10 shadow-xl">
               <h1 className="text-lg font-semibold text-zinc-100">Preview</h1>
               <PreviewPanel thumbnail={thumbnail} isLoading={loading} aspectRatio={aspectRatio} />
             </div>

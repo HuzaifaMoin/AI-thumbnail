@@ -4,8 +4,10 @@ import { ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import { featuresData } from "../data/features";
 import type { IFeature } from "../types";
-import featuresShowcase1 from "../assets/features-showcase-1.png";
-import featuresShowcase2 from "../assets/features-showcase-2.png";
+// Served from /public
+const featuresShowcase1 = "/features-showcase-1.png";
+// Served from /public
+const featuresShowcase2 = "/features-showcase-2.png";
 
 export default function FeaturesSection() {
     return (
